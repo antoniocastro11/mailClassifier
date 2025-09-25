@@ -1,38 +1,36 @@
-from openai import OpenAI
-from config import OPENAPI_KEY
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
 
-client = OpenAI(api_key=OPENAPI_KEY)
+emails = [
+    "Quero saber o status da minha requisição",
+    "Poderia me atualizar sobre meu pedido?",
+    "Estou com problema no sistema",
+    "Não consigo acessar minha conta",
+    "Gostaria de uma cotação de preços",
+    "Preciso de informações comerciais",
+    "Feliz Natal para todos",
+    "Muito obrigado pelo atendimento",
+    "Bom dia, como vocês estão?"
+]
+labels = [
+    "Produtivo", "Produtivo",   
+    "Produtivo", "Produtivo",    
+    "Produtivo", "Produtivo",    
+    "Improdutivo", "Improdutivo", "Improdutivo"
+]
 
-def classify_and_answer(emailText: str):
-    prompt = f"""
-    Você é um assistente que classifica os emails recebidos em uma empresa.
-    Existem duas categorias possíveis: 
-    1. Produtivo: requer ação ou resposta específica. Exemplos:
-    2. Improdutivo: não requer ações imediatas: Exemplos:
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(emails)
+clf = MultinomialNB()
+clf.fit(X, labels)
 
-    Tarefa:
-    1. Classifique o seguinte email como "Produtivo" ou "Improdutivo".
-    2. Sugira uma resposta automática curta e adequada
+def classify_and_answer(email_text: str):
+    X_new = vectorizer.transform([email_text])
+    categoria = clf.predict(X_new)[0]
 
-    email: {emailText}
-    Responda em JSON, assim:
-    {{
-        "categoria": "...",
-        "resposta": "..."
-    }} 
-    """
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",  # mais rápido e barato
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4
-    )
+    if categoria == "Produtivo":
+        resposta = "Recebemos sua solicitação e vamos dar andamento em breve."
+    else:
+        resposta = "Obrigado pela sua mensagem! Desejamos um ótimo dia."
 
-    raw_output = response.choices[0].message.content
-
-    import json
-    try:
-        result= json.loads(raw_output)
-    except:
-        result = {"categoria": "indefinido",
-                  "resposta": raw_output}
-    return result
+    return {"categoria": categoria, "resposta": resposta}
