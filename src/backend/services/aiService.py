@@ -3,7 +3,7 @@ from config import OPENAPI_KEY
 
 client = OpenAI(api_key=OPENAPI_KEY)
 
-def classify(emailText: str):
+def classify_and_answer(emailText: str):
     prompt = f"""
     Você é um assistente que classifica os emails recebidos em uma empresa.
     Existem duas categorias possíveis: 
