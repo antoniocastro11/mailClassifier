@@ -21,7 +21,7 @@ def classify_and_answer(emailText: str):
         "resposta": "..."
     }} 
     """
-      response = client.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",  # mais rápido e barato
         messages=[{"role": "user", "content": prompt}],
         temperature=0.4
