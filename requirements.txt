@@ -1,4 +1,4 @@
 flask
-flask-cors
-openai
-python-dotenv
+scikit-learn
+nltk
+PyPDF2
