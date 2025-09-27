@@ -5,20 +5,45 @@ const categorySpan = document.getElementById("category");
 const responseText = document.getElementById("responseText");
 const errorMsg = document.getElementById("errorMsg");
 
+const emailTextArea = document.getElementById("emailText");
+const fileInput = document.getElementById("fileUpload");
+
+const clearTextBtn = document.getElementById("clearBtn");
+const clearFileBtn = document.getElementById("clearFileBtn");
+
+clearTextBtn.addEventListener("click", () => {
+  emailTextArea.value = "";
+  errorMsg.classList.add("hidden");
+  resultDiv.classList.add("hidden");
+});
+
+clearFileBtn.addEventListener("click", () => {
+  fileInput.value = "";
+  errorMsg.classList.add("hidden");
+  resultDiv.classList.add("hidden");
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMsg.classList.add("hidden");
   resultDiv.classList.add("hidden");
 
-  const emailText = document.getElementById("emailText").value.trim();
-  const fileInput = document.getElementById("fileUpload");
-  let fileContent = "";
+  const emailText = emailTextArea.value.trim();
+  const hasFile = fileInput.files.length > 0;
 
   try {
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
+    if (emailText && hasFile) {
+      throw new Error("Envie apenas texto ou apenas arquivo, não ambos.");
+    }
 
+    if (!emailText && !hasFile) {
+      throw new Error("Por favor, insira o texto do email ou envie um arquivo.");
+    }
+
+    if (hasFile) {
+      const file = fileInput.files[0];
       const allowedTypes = ["text/plain", "application/pdf"];
+
       if (!allowedTypes.includes(file.type)) {
         throw new Error("Formato inválido! Apenas .txt ou .pdf são permitidos.");
       }
@@ -26,25 +51,13 @@ form.addEventListener("submit", async (e) => {
       if (file.size > 2 * 1024 * 1024) {
         throw new Error("Arquivo muito grande! Máximo permitido é 2MB.");
       }
-
-      if (file.type === "text/plain") {
-        fileContent = await file.text();
-      } else if (file.type === "application/pdf") {
-        fileContent = null;
-      }
-    }
-
-    if (!emailText && !fileContent && fileInput.files.length === 0) {
-      throw new Error("Por favor, insira o texto do email ou envie um arquivo.");
     }
 
     loading.classList.remove("hidden");
 
     const payload = new FormData();
-    payload.append("email", emailText);
-    if (fileInput.files.length > 0) {
-      payload.append("file", fileInput.files[0]);
-    }
+    if (emailText) payload.append("email", emailText);
+    if (hasFile) payload.append("file", fileInput.files[0]);
 
     const response = await fetch("http://localhost:5000/classify", {
       method: "POST",
