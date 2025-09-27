@@ -27,6 +27,3 @@ def classify():
 
     categoria, resposta = classify_and_answer(email_text)
     return jsonify({"categoria": categoria, "resposta": resposta})
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -1,4 +1,3 @@
-# backend/utils/fileReader.py
 import io
 from PyPDF2 import PdfReader
 
@@ -11,16 +10,13 @@ def extract_text_from_file(file):
     elif filename.endswith(".pdf"):
         text = ""
         try:
-            file.stream.seek(0)
-            pdf_reader = PdfReader(file.stream)
+            pdf_reader = PdfReader(file)
             for page in pdf_reader.pages:
                 text += page.extract_text() or ""
         except Exception as e:
             print(f"Erro ao ler PDF: {e}")
             return ""
-        text = text.strip()
         text = " ".join(text.split())
-
 
     else:
         raise ValueError("Formato de arquivo não suportado. Use .txt ou .pdf.")
