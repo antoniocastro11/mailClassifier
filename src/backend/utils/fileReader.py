@@ -6,7 +6,7 @@ def extract_text_from_file(file):
     filename = file.filename.lower()
 
     if filename.endswith(".txt"):
-        return file.read().decode("utf-8", errors="ignore").strip()
+        text = file.read().decode("utf-8", errors="ignore").strip()
 
     elif filename.endswith(".pdf"):
         text = ""
@@ -18,7 +18,10 @@ def extract_text_from_file(file):
         except Exception as e:
             print(f"Erro ao ler PDF: {e}")
             return ""
-        return text.strip()
+        text = text.strip()
+        text = " ".join(text.split())
+
 
     else:
         raise ValueError("Formato de arquivo não suportado. Use .txt ou .pdf.")
+    return text
