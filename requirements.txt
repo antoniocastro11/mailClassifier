@@ -1,4 +1,5 @@
 flask
-scikit-learn
-nltk
+flask-cors
 PyPDF2
+nltk
+scikit-learn
