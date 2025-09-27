@@ -59,7 +59,7 @@ form.addEventListener("submit", async (e) => {
     if (emailText) payload.append("email", emailText);
     if (hasFile) payload.append("file", fileInput.files[0]);
 
-    const response = await fetch("http://localhost:5000/classify", {
+    const response = await fetch("http://mailclassifier-gilt.vercel.app/classify/api", {
       method: "POST",
       body: payload,
     });
